@@ -15,6 +15,10 @@ A command line tool for inserting [SPDX](https://spdx.dev) [short identifiers](h
 > spdx-racer --files go,rs --license MPL-2.0
 ```
 
-will add `// SPDX-License-Identifier: MPL-2.0` to the top of all Go and Rust files that it finds.
+will add 
+
+`// SPDX-License-Identifier: MPL-2.0` 
+
+to the top of all Go and Rust files that it finds in the current directory.
 
 If the file already has a license entry, it ignores the file.
