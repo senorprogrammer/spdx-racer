@@ -9,6 +9,14 @@ import (
 	"strings"
 )
 
+var (
+	// excludableFileNames defines naming conventions for files that should be excluded from
+	// having a license entry added to them (like auto-generated files, etc.)
+	excludableFileNames = []string{
+		"_mock",
+	}
+)
+
 // SPDXWriter is responsible for writing the license into the files
 type SPDXWriter struct {
 	fileTypes []string
@@ -22,17 +30,7 @@ func NewSPDXWriter() *SPDXWriter {
 	return w
 }
 
-// HasExtension returns TRUE if the incoming extension is one we're looking to operate
-// against, FALSE if it is not
-func (sw *SPDXWriter) HasExtension(ext string) bool {
-	for _, ft := range sw.fileTypes {
-		if ft == strings.TrimPrefix(ext, ".") {
-			return true
-		}
-	}
-
-	return false
-}
+/* -------------------- Exported Functions -------------------- */
 
 // Write recursively loops over all the files in the directory looking for ones with extensions
 // that are in fileTypes and writing the license string into the top of the file if it
@@ -51,10 +49,8 @@ func (sw *SPDXWriter) Write(license string, fileTypes []string) error {
 			return err
 		}
 
-		// Check to see if this is the kind of file we want to prepend
-		// a license to
-		fileExt := filepath.Ext(path)
-		if !sw.HasExtension(fileExt) {
+		isLicensable := sw.isLicensableFile(path)
+		if !isLicensable {
 			return nil
 		}
 
@@ -66,4 +62,44 @@ func (sw *SPDXWriter) Write(license string, fileTypes []string) error {
 	})
 
 	return err
+}
+
+/* -------------------- Unexported Functions -------------------- */
+
+// isLicensableFile checks to see if this is the kind of file we want to prepend a license to
+func (sw *SPDXWriter) isLicensableFile(path string) bool {
+	fileExt := filepath.Ext(path)
+	if !sw.hasExtension(fileExt) {
+		return false
+	}
+
+	// Has the extension but is it being excluded for other reasons?
+	fileName := filepath.Base(path)
+	if sw.hasExcludableName(fileName) {
+		return false
+	}
+
+	return true
+}
+
+func (sw *SPDXWriter) hasExcludableName(fileName string) bool {
+	for _, fn := range excludableFileNames {
+		if strings.Contains(fileName, fn) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// hasExtension returns TRUE if the incoming extension is one we're looking to operate
+// against, FALSE if it is not
+func (sw *SPDXWriter) hasExtension(ext string) bool {
+	for _, ft := range sw.fileTypes {
+		if ft == strings.TrimPrefix(ext, ".") {
+			return true
+		}
+	}
+
+	return false
 }
