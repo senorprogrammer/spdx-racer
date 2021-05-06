@@ -43,6 +43,10 @@ func (tFile *TargetFile) AddLicense(license string) error {
 // HasLicense returns TRUE if this file already contains a license entry,
 // FALSE if it does not
 func (tFile *TargetFile) HasLicense() bool {
+	if len(tFile.data) == 0 {
+		return false
+	}
+
 	return strings.Contains(tFile.data[0], spdxPrefix)
 }
 
@@ -74,7 +78,6 @@ func (tFile *TargetFile) write(license string) error {
 		return fmt.Errorf("file is empty: %s", tFile.path)
 	}
 
-	// Jam the license string to the front of the file data
 	licStr := tFile.licenseString(license)
 
 	tmp := []string{licStr}
@@ -82,6 +85,7 @@ func (tFile *TargetFile) write(license string) error {
 
 	tFile.data = tmp
 
+	// Jam the license string to the front of the file data
 	f, err := os.OpenFile(tFile.path, os.O_RDWR, 0600)
 	if err != nil {
 		return err
@@ -97,9 +101,5 @@ func (tFile *TargetFile) write(license string) error {
 	}
 
 	err = writer.Flush()
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
