@@ -11,11 +11,15 @@ import (
 )
 
 var (
+	deleteFlag  bool
 	filesFlag   string
 	licenseFlag string
 )
 
 func init() {
+	flag.BoolVar(&deleteFlag, "d", false, "delete the license from each source file (short-hand)")
+	flag.BoolVar(&deleteFlag, "delete", false, "delete the license from each source file")
+
 	flag.StringVar(&filesFlag, "f", "", "specifies the file types to write the license into (short-hand)")
 	flag.StringVar(&filesFlag, "files", "", "specifies the file types to write the license into")
 
@@ -39,10 +43,16 @@ func splitFilesFlag(files string) []string {
 
 func run() error {
 	spdxWriter := NewSPDXWriter()
-
 	fileTypes := splitFilesFlag(filesFlag)
-	err := spdxWriter.Write(licenseFlag, fileTypes)
 
+	// We want to delete the license from the files
+	if deleteFlag {
+		err := spdxWriter.Delete(licenseFlag, fileTypes)
+		return err
+	}
+
+	// We want to add the license to the files
+	err := spdxWriter.Write(licenseFlag, fileTypes)
 	return err
 }
 
