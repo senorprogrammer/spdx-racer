@@ -9,6 +9,10 @@
 
 A command line tool for inserting [SPDX](https://spdx.dev) [short identifiers](https://spdx.github.io/spdx-spec/appendix-V-using-SPDX-short-identifiers-in-source-files/) into the tops of files.
 
+* [Usage](#usage)
+   * [Adding a License](#adding-a-license)
+   * [Removing a License](#removing-a-license)
+
 ## Usage
 
 ### Adding a License
