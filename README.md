@@ -11,14 +11,22 @@ A command line tool for inserting [SPDX](https://spdx.dev) [short identifiers](h
 
 ## Usage
 
+### Adding a License
+
 ```
 > spdx-racer --files go,rs --license MPL-2.0
 ```
 
-will add 
-
-`// SPDX-License-Identifier: MPL-2.0` 
-
-to the top of all Go and Rust files that it finds in the current directory.
+will insert `// SPDX-License-Identifier: MPL-2.0` at the top of all Go and Rust files in the current directory.
 
 If the file already has a license entry, it ignores the file.
+
+### Removing a License
+
+To delete a license, add the `--delete` or `-d` flag to the command:
+
+```
+> spdx-racer --files go,rs --license MPL-2.0 -d
+```
+
+will delete `// SPDX-License-Identifier: MPL-2.0` from the top of all Go and Rust files in the current directory.
